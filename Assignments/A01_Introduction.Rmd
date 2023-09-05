@@ -25,7 +25,6 @@ Now, run this code cell the same way. This will install "tinytex" -- a helper ap
 ```{r install tiny tex, eval=FALSE, include=FALSE}
 #install tinytext
 tinytex::install_tinytex()
-install.packages("tinytex")
 ```
 
 ### Set your default knit directory
@@ -41,21 +40,24 @@ Enter answers to the questions just below the >Answer: prompt.
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
 > Answer: 
+I did data analysis and statistics in my undergraduate courses using Excel for chemistry courses. My first introduction to R was last semester in Applied Statistical Modeling for Environmental Management. I have never used Git before. 
 
 2. Are there any components of the course about which you feel confident?
 
 > Answer: 
+I feel confident in my ability to use RMarkdown. 
 
 3. Are there any components of the course about which you feel apprehensive?
 
 > Answer: 
-
+Even though I took statistics last semester, I still do not feel fully confident in my R skills, so I am somewhat worried about my ability to keep up. 
 
 ## 3) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
 
 > Answer: 
+https://github.com/emkuhlmann/EDE_Fall2023/tree/main#readme
 
 ## 4) Knitting
 When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Sakai. 

@@ -1,6 +1,6 @@
 ---
-title: "Assignment 1: Introduction"
-author: "Student Name"
+title: "EmilyKuhlmann_A01_Introduction.Rmd"
+author: "Emily Kuhlmann"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -25,6 +25,7 @@ Now, run this code cell the same way. This will install "tinytex" -- a helper ap
 ```{r install tiny tex, eval=FALSE, include=FALSE}
 #install tinytext
 tinytex::install_tinytex()
+install.packages("tinytex")
 ```
 
 ### Set your default knit directory

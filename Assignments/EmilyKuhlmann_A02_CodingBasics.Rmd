@@ -72,10 +72,22 @@ This dataframe is different than a matrix because it contains multiple classes o
 11. Apply your function to the vector with test scores that you created in number 5.
 
 ```{r basics 3}
+p_or_f <- function(x) {
+  if(x < 50) {
+    print(FALSE)
+  }
+  else {
+    print(TRUE)
+  }
+}
 
+pass_fail <- function(x) {
+  print(ifelse(x<50, FALSE, TRUE))
+}
 
+pass_fail(score)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer:
+> Answer: The `ifelse` option worked because it could be applied to each value of the vector of test scores, whereas the if and else option could only apply the function to a single object and not a vector. 

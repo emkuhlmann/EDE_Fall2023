@@ -34,11 +34,15 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 ```{r Setup,  message = FALSE}
 getwd()
+
+#loading the necessary packages
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
 library(here)
-Neonics <- read.csv(file = here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv'), stringsAsFactors = T)
+
+#uploading the datasets with here()
+Neonics <- read.csv(file = here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv'), stringsAsFactors = T) 
 Litter <- read.csv(file = here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv'), stringsAsFactors = T)
 ```
 
@@ -63,15 +67,15 @@ Litter <- read.csv(file = here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_r
 
 5.  What are the dimensions of the dataset?
 
-```{r}
-Neonic_dim <- dim(Neonics)
+```{r Neonic Dimensions}
+Neonic_dim <- dim(Neonics) #dataset dimensions
 Neonic_dim
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
-```{r}
-Common_effect <- summary(Neonics$Effect)
+```{r Neonic common effect}
+Common_effect <- summary(Neonics$Effect) #summarizing the effects, lists the count for each effect
 Common_effect
 ```
 
@@ -80,8 +84,8 @@ Common_effect
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
-```{r}
-Common_Name <- sort(summary(Neonics$Species.Common.Name), decreasing = T)
+```{r Neonic common species}
+Common_Name <- sort(summary(Neonics$Species.Common.Name), decreasing = T) #summarizing the species and sorting in order of decreasing frequency
 Common_Name
 ```
 
@@ -89,8 +93,8 @@ Common_Name
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r}
-Conc_class <- class(Neonics$Conc.1..Author.)
+```{r Neonic concentration class}
+Conc_class <- class(Neonics$Conc.1..Author.) #finding the class of concentration, which is a factor
 Conc_class
 ```
 
@@ -100,15 +104,17 @@ Conc_class
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r}
-ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year), bins = 50)
+```{r Neonic frequency plot}
+ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year), bins = 50) 
+#frequency plot of the number of studies per year
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
-```{r}
+```{r Neonic frequency plot 2}
 ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 50) +
   theme(legend.position = "top")
+#frequency plot of the number of studies per year separated by test location
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -119,8 +125,9 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
-```{r}
+```{r Neonic bar graph}
 ggplot(Neonics, aes(x = Endpoint)) + geom_bar() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#Bar plot displaying the number of each endpoint included in the dataset
 ```
 
 > Answer: The two most common endpoints are NOEL and LOEL. NOEL is the 'No observable effect concentration' which represents the highest concnetration at which there is no adverse effect observed. The LOEL is the "Lowest observable effect concentration' and is defined as the lowest concentration at which an adverse effect is seen in the organism. 
@@ -129,7 +136,10 @@ ggplot(Neonics, aes(x = Endpoint)) + geom_bar() + theme(axis.text.x = element_te
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
-```{r}
+```{r Litter collect date class}
+Collect_class <- class(Litter$collectDate)
+Collect_class
+
 
 ```
 

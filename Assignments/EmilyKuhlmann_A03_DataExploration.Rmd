@@ -42,8 +42,10 @@ library(ggplot2)
 library(here)
 
 #uploading the datasets with here()
-Neonics <- read.csv(file = here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv'), stringsAsFactors = T) 
-Litter <- read.csv(file = here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv'), stringsAsFactors = T)
+Neonics <- read.csv(file = here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv'), 
+                    stringsAsFactors = T) 
+Litter <- read.csv(file = here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv'), 
+                   stringsAsFactors = T)
 ```
 
 ## Learn about your system
@@ -75,7 +77,8 @@ Neonic_dim
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
 ```{r Neonic common effect}
-Common_effect <- summary(Neonics$Effect) #summarizing the effects, lists the count for each effect
+Common_effect <- summary(Neonics$Effect) 
+#summarizing the effects, lists the count for each effect
 Common_effect
 ```
 
@@ -85,7 +88,8 @@ Common_effect
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
 ```{r Neonic common species}
-Common_Name <- sort(summary(Neonics$Species.Common.Name), decreasing = T) #summarizing the species and sorting in order of decreasing frequency
+Common_Name <- sort(summary(Neonics$Species.Common.Name), decreasing = T)
+#summarizing the species and sorting in order of decreasing frequency
 Common_Name
 ```
 
@@ -94,7 +98,8 @@ Common_Name
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
 ```{r Neonic concentration class}
-Conc_class <- class(Neonics$Conc.1..Author.) #finding the class of concentration, which is a factor
+Conc_class <- class(Neonics$Conc.1..Author.) 
+#finding the class of concentration, which is a factor
 Conc_class
 ```
 
@@ -105,15 +110,19 @@ Conc_class
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r Neonic frequency plot}
-ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year), bins = 50) 
+study_freq <- ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year), bins = 50) 
+study_freq
 #frequency plot of the number of studies per year
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r Neonic frequency plot 2}
-ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 50) +
+study_freq2 <- ggplot(Neonics) + geom_freqpoly(aes(x = Publication.Year, 
+                                                   color = Test.Location), 
+                                               bins = 50) +
   theme(legend.position = "top")
+study_freq2
 #frequency plot of the number of studies per year separated by test location
 ```
 
@@ -126,7 +135,9 @@ Interpret this graph. What are the most common test locations, and do they diffe
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
 ```{r Neonic bar graph}
-ggplot(Neonics, aes(x = Endpoint)) + geom_bar() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+endpt_counts <- ggplot(Neonics, aes(x = Endpoint)) + geom_bar() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+endpt_counts
 #Bar plot displaying the number of each endpoint included in the dataset
 ```
 
@@ -140,39 +151,51 @@ ggplot(Neonics, aes(x = Endpoint)) + geom_bar() + theme(axis.text.x = element_te
 Collect_class <- class(Litter$collectDate) #checking the class
 Collect_class
 
-Litter$collectDate <- ymd(Litter$collectDate) #using lubridate to change the class 
-Collect_class2 <- class(Litter$collectDate) #checking the class again
+#using lubridate to change the class 
+Litter$collectDate <- ymd(Litter$collectDate) 
+
+#checking the class again
+Collect_class2 <- class(Litter$collectDate) 
 Collect_class2
 
-SampleDates <- unique(x = Litter$collectDate, incomparables = F) #looking at the sampling dates
+#looking at the sampling dates
+SampleDates <- unique(x = Litter$collectDate, incomparables = F) 
 SampleDates #Aug 2 and Aug 30 were sampled
 ```
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
-```{r}
-Plots <- unique(Litter$plotID, incomparables = F)
-Plots
+```{r Unique Plots}
+Plots <- unique(Litter$plotID, incomparables = F) #looking at the unique plots
+Plots #12 different plots
 ```
 
-> Answer:
+> Answer: The unique function returns one of each unique entry to show how many different entries there are, while the summary function returns the count for each unique entry in that column.  
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
-```{r}
-
+```{r Litter bar graph}
+Litt_type <- ggplot(Litter, aes(x = functionalGroup)) + geom_bar() #bar plot
+Litt_type
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r}
+```{r Litter box and violin plots}
+mass_box <- ggplot(Litter) + geom_boxplot(aes(x = functionalGroup, 
+                                              y = dryMass))
+mass_box #boxplot of dry mass for each functional group
 
+mass_violin <- ggplot(Litter) + geom_violin(aes(x = functionalGroup, 
+                                                y = dryMass),
+                                            draw_quantiles = c(0.25, 0.5, 0.75))
+mass_violin #violin plot of dry mass for each functional group
 ```
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
 
-> Answer:
+> Answer: The boxplot is more effective because functional group is a discrete variable and therefore has no range to be shown in the violin plot. A sample can only be a functional group or not be that functional group, so there is no variation in the x-axis for this set of data and the violin plot therefore only shows straight lines. In the boxplot, the spread of the data and the quantiles are visible. 
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
-> Answer:
+> Answer: At these sites, the mixed and needles functional groups tend to have the highest biomass. 

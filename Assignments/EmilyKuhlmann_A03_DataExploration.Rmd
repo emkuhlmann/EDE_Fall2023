@@ -137,16 +137,22 @@ ggplot(Neonics, aes(x = Endpoint)) + geom_bar() + theme(axis.text.x = element_te
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
 ```{r Litter collect date class}
-Collect_class <- class(Litter$collectDate)
+Collect_class <- class(Litter$collectDate) #checking the class
 Collect_class
 
+Litter$collectDate <- ymd(Litter$collectDate) #using lubridate to change the class 
+Collect_class2 <- class(Litter$collectDate) #checking the class again
+Collect_class2
 
+SampleDates <- unique(x = Litter$collectDate, incomparables = F) #looking at the sampling dates
+SampleDates #Aug 2 and Aug 30 were sampled
 ```
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
 ```{r}
-
+Plots <- unique(Litter$plotID, incomparables = F)
+Plots
 ```
 
 > Answer:

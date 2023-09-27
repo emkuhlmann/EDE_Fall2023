@@ -60,7 +60,7 @@ glimpse(PM19)
 
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
-```{r}
+```{r Data Processing}
 #3
 ozone18$Date <- mdy(ozone18$Date)
 ozone19$Date <- mdy(ozone19$Date)
@@ -105,16 +105,35 @@ write.csv(PM19_processed, row.names = F, file = "./Data/Processed/EPAair_PM25_NC
 
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1819_Processed.csv"
 
-```{r}
+```{r Combining datasets}
 #7 
+summary(ozone18_processed)
+summary(ozone19_processed)
+summary(PM18_processed)
+summary(PM19_processed)
+
+EPA_AirQuality <- rbind(ozone18_processed, ozone19_processed, PM18_processed, PM19_processed)
 
 #8 
+EPA_AQ_processed <- 
+  EPA_AirQuality %>% 
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>% 
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>% 
+  summarise(meanAQI = mean(DAILY_AQI_VALUE), 
+            mean_latitude = mean(SITE_LATITUDE),
+            mean_longitude = mean(SITE_LONGITUDE)) %>% 
+  mutate(Month = month(Date)) %>% 
+  mutate(Year = year(Date))
 
-#9
+#9 
+EPA_AQ_spread <- pivot_wider(EPA_AQ_processed, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
 
 #10
-
+AirQual_dimensions <- dim(EPA_AQ_spread)
+AirQual_dimensions
 #11
+write.csv(EPA_AQ_spread, row.names = F, 
+          file = "./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
 
 ```
 
@@ -125,10 +144,16 @@ write.csv(PM19_processed, row.names = F, file = "./Data/Processed/EPAair_PM25_NC
 
 13. Call up the dimensions of the summary dataset.
 
-```{r}
+```{r Summary Tables}
 
 #12
+EPAair_summary <- 
+  EPA_AQ_spread %>% 
+  group_by(Site.Name, Month, Year) %>% 
+  summarise(Mean_ozone = mean(Ozone), 
+            Mean_PM2.5 = mean(PM2.5))  
 
+#filter(!drop_na(Mean_ozone)) - not working?? have to specify also drop those PM values??
 
 #13
 

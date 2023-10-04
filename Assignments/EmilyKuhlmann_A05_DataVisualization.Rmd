@@ -33,6 +33,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
 ```{r initialize project}
 #1 
 library(tidyverse) ; library(lubridate) ; library(here) ; library(cowplot)
+library(viridis) ; library(RColorBrewer)
 getwd()
 PeterPaul.chem.nutrients <- 
   read.csv(
@@ -76,8 +77,9 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 Plot1 <- ggplot(PeterPaul.chem.nutrients, aes(x = po4, y = tp_ug, color = lakename)) +
   geom_point() + 
   geom_smooth(method = lm, color = "black") + 
-  xlim(0, 50) + 
-  labs(color = "Lake Name")
+  labs(color = "Lake Name") +
+  scale_y_continuous(name = "Total Phosphorous, ug") +
+  scale_x_continuous(name = "Phosphate", limits = c(0, 50))
 Plot1
 ```
 

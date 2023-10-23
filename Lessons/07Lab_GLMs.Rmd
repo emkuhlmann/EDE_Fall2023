@@ -121,9 +121,9 @@ OzonebyALL.regression <- lm(data = EPACorr, PM2.5 ~ Ozone + Year + mean_Lng +
                               Month + mean_Lat + Ozone)
 summary(OzonebyALL.regression)
 step(OzonebyALL.regression) #best model is removing year
-OzonebyALL.regression2 <- lm(data = EPACorr, PM2.5 ~ Ozone + mean_Lng + 
+OzoneBest.regression2 <- lm(data = EPACorr, PM2.5 ~ Ozone + mean_Lng + 
                               Month + mean_Lat + Ozone)
-summary(OzonebyALL.regression2)
+summary(OzoneBest.regression2)
 #Exercise 6: Run another regression using the variables selected on Exercise 6. Compare r-squared value with the one from Exercise 2. 
 
 ```

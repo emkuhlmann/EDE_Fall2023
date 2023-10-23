@@ -31,7 +31,7 @@ getwd()
 #install.packages("agricolae")
 library(here) ; library(agricolae) ; library(lubridate) ; library(tidyverse) 
 library(ggplot2) ; library(plyr)
-LakeData <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"), stringsAsFactors = TRUE)
+LakeData <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = T)
 LakeData$sampledate <- mdy(LakeData$sampledate)
 
 #2
@@ -68,28 +68,33 @@ NTL.Processed <-
   drop_na()
 
 #5
-ggplot(NTL.Processed, )
-
+tempbydepth <- ggplot(NTL.Processed, aes(x = depth, y = temperature_C)) + 
+  geom_point(alpha = 0.5) +
+  ylim(0, 35) +
+  geom_smooth(method = lm) +
+  ylab("Temperature, ºC") +
+  xlab("Lake Depth, m")
+tempbydepth
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: The figure suggests that temperature is inversely related to lake depth; generally, the temperature decreases as lake depth increases. It does not look like a completely linear realtionship becasue there is little temperature change after reaching a depth around 10 meters. 
 
 
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
 #7
-
-
+temperature.regression <- lm(NTL.Processed$temperature_C ~ NTL.Processed$depth)
+summary(temperature.regression)
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: The model shows that for a 1m change in depth, the temperature is predicted to decrease by 1.946 ºC. The R-squared for the model is 0.7387, meaning that 73.87% of the variability in temperature is explained by changes in depth. There are 9726 degrees of freedom and the p-value is less than 2.2e-16. This is a statistically significant result and the null hypothesis that the mean lake temperature recorded during July does not change with depth across all lakes can be rejected. 
 
 
 ---

@@ -101,7 +101,7 @@ Create two separate code chunks that create boxplots of the distribution of Ozon
 ```{r Ozone Boxplot 2018, echo=FALSE, fig.align='left', fig.cap="2018 Ozone Levels", warning=FALSE, fig.height=4}
 Ozone2018 <- ggplot(epa_data %>% filter(Year == 2018), aes(x = factor(Month, levels = 1:12, labels = month.abb), y = Ozone)) +
   geom_boxplot() +
-  scale_x_discrete(name = "Year") + 
+  scale_x_discrete(name = "Month") + 
   scale_y_continuous(name = "Concentration (µg/m3)")
 Ozone2018
 ```
@@ -109,7 +109,7 @@ Ozone2018
 ```{r Ozone Boxplot 2019, echo=FALSE, fig.align='left', fig.cap="2019 Ozone Levels", warning=FALSE, fig.height=4}
 Ozone2019 <- ggplot(epa_data %>% filter(Year == 2019), aes(x = factor(Month, levels = 1:12, labels = month.abb), y = Ozone)) +
   geom_boxplot() +
-  scale_x_discrete(name = "Year") +
+  scale_x_discrete(name = "Month") +
   scale_y_continuous(name = "Concentration (µg/m3)")
 Ozone2019
 ```

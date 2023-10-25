@@ -79,7 +79,7 @@ tempbydepth <- ggplot(NTL.Processed, aes(x = depth, y = temperature_C)) +
 tempbydepth
 ```
 
-
+\newpage
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
 > Answer: The figure suggests that temperature is inversely related to lake depth; generally, the temperature decreases as lake depth increases. It does not look like a completely linear realtionship becasue there is little temperature change after reaching a depth around 10 meters. 

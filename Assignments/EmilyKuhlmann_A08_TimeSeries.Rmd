@@ -1,6 +1,6 @@
 ---
 title: "Assignment 8: Time Series Analysis"
-author: "Student Name"
+author: "Emily Kuhlmann"
 date: "Fall 2023"
 output: pdf_document
 geometry: margin=2.54cm
@@ -27,7 +27,16 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 * Set your ggplot theme
 
 ```{r}
+getwd()
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(trend)
 
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
 ```
 
 
@@ -35,7 +44,38 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r, message = FALSE}
 #1
+Garinger10 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv",
+                       stringsAsFactors = T)
+Garinger11 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv",
+                       stringsAsFactors = T)
+Garinger12 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv",
+                       stringsAsFactors = T)
+Garinger13 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv",
+                       stringsAsFactors = T)
+Garinger14 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv",
+                       stringsAsFactors = T)
+Garinger15 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv",
+                       stringsAsFactors = T)
+Garinger16 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv",
+                       stringsAsFactors = T)
+Garinger17 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv",
+                       stringsAsFactors = T)
+Garinger18 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv",
+                       stringsAsFactors = T)
+Garinger19 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv",
+                       stringsAsFactors = T)
 
+
+GaringerOzone <- Garinger10 %>%
+  left_join(Garinger11, by = "Date") %>%
+  left_join(Garinger12, by = "Date") %>%
+  left_join(Garinger13, by = "Date") %>%
+  left_join(Garinger14, by = "Date") %>%
+  left_join(Garinger15, by = "Date") %>%
+  left_join(Garinger16, by = "Date") %>%
+  left_join(Garinger17, by = "Date") %>%
+  left_join(Garinger18, by = "Date") %>%
+  left_join(Garinger19, by = "Date")
 ```
 
 ## Wrangle

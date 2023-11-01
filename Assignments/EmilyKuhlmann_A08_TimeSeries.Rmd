@@ -65,17 +65,26 @@ Garinger18 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw
 Garinger19 <- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv",
                        stringsAsFactors = T)
 
+start_date <- as.Date("2010-01-01")
+end_date <- as.Date("2019-12-31")
 
-GaringerOzone <- Garinger10 %>%
-  left_join(Garinger11, by = "Date") %>%
-  left_join(Garinger12, by = "Date") %>%
-  left_join(Garinger13, by = "Date") %>%
-  left_join(Garinger14, by = "Date") %>%
-  left_join(Garinger15, by = "Date") %>%
-  left_join(Garinger16, by = "Date") %>%
-  left_join(Garinger17, by = "Date") %>%
-  left_join(Garinger18, by = "Date") %>%
-  left_join(Garinger19, by = "Date")
+date_sequence <- seq(start_date, end_date, by = "day")
+date_seq <- data.frame(date_sequence)
+date_seq$Date <- factor(date_seq$date_sequence)
+
+GaringerOzone1 <-  Garinger10 %>% 
+  rbind(Garinger11, by = "Date") %>% 
+  rbind(Garinger12, by = "Date") %>%
+  rbind(Garinger13, by = "Date") %>%
+  rbind(Garinger14, by = "Date") %>%
+  rbind(Garinger15, by = "Date") %>%
+  rbind(Garinger16, by = "Date") %>%
+  rbind(Garinger17, by = "Date") %>%
+  rbind(Garinger18, by = "Date") %>%
+  rbind(Garinger19, by = "Date")
+
+GaringerOzone <- left_join(date_seq, GaringerOzone1, by = "Date")
+
 ```
 
 ## Wrangle

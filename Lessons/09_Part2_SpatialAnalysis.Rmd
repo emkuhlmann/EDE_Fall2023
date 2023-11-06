@@ -95,9 +95,8 @@ counties_sf<- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>%
 #
 colnames(counties_sf)
 
-#
+#coordinate reference system information
 st_crs(counties_sf) 
-
 
 #
 nrow(counties_sf)
@@ -118,22 +117,23 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-
+huc8_sf <- st_read(here('Data/Spatial/NCHUC8.shp'))
 
 #Reveal the columns
-
+colnames(huc8_sf)
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Examine some records
 head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
+mapView(huc8_sf, zcol = "ACRES")
 
-
-
-
+ggplot(huc8_sf) +
+  geom_sf(aes(fill=ACRES)) +
+  scale_fill_viridis_c()
 ```
 
 ### 2.2.3 Challenge!
@@ -142,14 +142,18 @@ head(huc8_sf)
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-
+huc8_sf2 <- st_read(here('Data/Spatial/NCHUC8.shp')) %>% 
+  filter(SUBBASIN == 'Upper Neuse')
 
 
 #Create a map
+mapView(huc8_sf, col.region = "orange", layer.name = 'HUC 8') +
+  mapView(huc8_sf2, zcol = "SUBBASIN", col.region = "purple", layer.name = 'Upper Neuse')
 
-
-
-
+ggplot() +
+  geom_sf(data=huc8_sf, fill = 'orange') +
+  geom_sf(data = huc8_sf2, fill = 'purple')
+  
 ```
 
 ### 2.2.4 Reading in GeoJSON data
@@ -169,7 +173,7 @@ If you have difficulty, the link you want is: - <https://services1.arcgis.com/Hp
 This a link to a spatial dataset in GeoJSON format. Now let's read this dataset in and explore it:
 
 ```{r load.geojson.data}
-powerplants_sf <- st_read('https://opendata.arcgis.com/datasets/ee0263bd105d41599be22d46107341c3_0.geojson')
+powerplants_sf <- st_read('https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/Plants_gdb/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson')
 
 #Reveal the field names
 colnames(powerplants_sf)
@@ -294,14 +298,18 @@ mapview(state_sf)
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
-
+unique(huc8_sf$DWQ_Basin)
 
 
 #Summarize on DWQ Basin value
-
+huc2_sf <- huc8_sf %>% 
+  group_by(DWQ_Basin) %>% 
+  summarize(ACRES = sum(ACRES),
+            SQ_MILES = sum(SQ_MILES))
+  
 
 #Map the data
-
+mapView(huc2_sf)
 
 ```
 
@@ -359,10 +367,17 @@ neuse_intersect_1 <- counties_sf_utm[neuse_sf,]
 
 #Select intersecting counties using the `filter()` command
 neuse_intersect_2 <- counties_sf_utm %>% 
-  filter(st_intersects(x = ., y = neuse_sf, sparse = FALSE))
+  filter(st_intersects(x = ., y = neuse_sf, sparse = FALSE)) #need sparse=F
+
+the_filter <- st_intersects(x = counties_sf_utm, y = neuse_sf, sparse = FALSE)
+#dot was a placeholder for what was piped in
+
+#new way to do it
+neuse_intersect_3 <- counties_sf_utm %>% 
+  st_filter(neuse_sf)
 
 #View the result
-myMap + mapview(neuse_intersect_2, alpha.regions = 0)
+myMap + mapview(neuse_intersect_3, alpha.regions = 0)
 
 #Actually intersect the counties (not just select those that intersect)
 neuse_counties_sf <- neuse_sf %>% 
@@ -381,7 +396,8 @@ mapview(neuse_counties_sf, zcol='Area_m2')
 
 ```{r EXERCISE: Clipping}
 #Select the Triangle County from the 
-
+triangle <- counties_sf_utm %>% 
+  filter(NAME == c("Chatham", "Durham", "Orange", "Wake"))
 
   
 #Grab the intersecting HUC_8s

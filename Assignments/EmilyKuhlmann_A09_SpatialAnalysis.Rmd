@@ -75,12 +75,12 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
-NWIS_Gages <- read.csv(here('Data/Raw/NWIS_SiteInfo_NE_RAW.csv'))
-NWIS_Gages$site_no <- factor(NWIS_Gages$site_no)
-NWIS_Gages$station_nm <- factor(NWIS_Gages$station_nm)
-NWIS_Gages$site_tp_cd <- factor(NWIS_Gages$site_tp_cd)
-NWIS_Gages$coord_acy_cd <- factor(NWIS_Gages$coord_acy_cd)
-NWIS_Gages$dec_coord_datum_cd <- factor(NWIS_Gages$dec_coord_datum_cd)
+NWIS_Gages <- read.csv(here('Data/Raw/NWIS_SiteInfo_NE_RAW.csv'), 
+                       colClasses = c('site_no' = 'factor', 
+                                      'station_nm' = 'factor',
+                                      'site_tp_cd'= 'factor',
+                                      'coord_acy_cd' = 'factor',
+                                      'dec_coord_datum_cd' = 'factor'))
 
 #8. Reveal the names of the columns
 colnames(NWIS_Gages)
@@ -149,9 +149,9 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 
 ```{r Read in gage site data, echo=TRUE, message=FALSE, warning=FALSE}
 #14. Read the site flow data into a data frame
-NWIS_Gage_height <- read_csv(here('Data/Raw/NWIS_SiteFlowData_NE_RAW.csv')) 
-NWIS_Gage_height$site_no <- factor(NWIS_Gage_height$site_no)                             
-NWIS_Gage_height$station_nm <- factor(NWIS_Gage_height$station_nm)
+NWIS_Gage_height <- read.csv(here('Data/Raw/NWIS_SiteFlowData_NE_RAW.csv'),
+                             colClasses = c('site_no' = 'factor',
+                                            'station_nm' = 'factor')) 
 
 #15. Show the column names
 colnames(NWIS_Gage_height)
@@ -176,7 +176,7 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r map gage sites}
 #Map the points, sized by gage height
-gage <- ggplot() +
+gage_height <- ggplot() +
   geom_sf(data = Nebraska_counties_sf, fill = "thistle") +
   geom_sf(data = NWIS_Gages_join, aes(color = gage_ht), alpha = 0.75) +
   labs(color = "Gage Height, m") +
@@ -184,7 +184,7 @@ gage <- ggplot() +
   theme(legend.title = element_text(size=10), 
         legend.text = element_text(size = 8),
         legend.key.size = unit(0.5, 'cm'))
-gage
+gage_height
 ```
 
 ---
@@ -225,14 +225,21 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r spatial selection}
 #22 Select the county
-Dawson_gages_utm <- NE_counties_utm %>% 
+Dawson_utm <- NE_counties_utm %>% 
   filter(NAME == "Dawson")
 
 #23 Spatially select gages within the selected county
+Dawson_intersect <- NWIS_Gages_sf_utm %>% 
+  filter(st_intersects(x = ., y = Dawson_utm, sparse = FALSE))
 
-
+Dawson_intersect2 <- NWIS_Gages_sf_utm[Dawson_utm,]
 #24 Plot
-
+Dawson_gages <- ggplot() +
+  geom_sf(data = NE_counties_utm, fill = "thistle") +
+  geom_sf(data = Dawson_utm, fill = "palegreen4") +
+  geom_sf(data = Dawson_intersect2, color = "black", alpha = 0.5)
+  
+Dawson_gages
 
 
 ```

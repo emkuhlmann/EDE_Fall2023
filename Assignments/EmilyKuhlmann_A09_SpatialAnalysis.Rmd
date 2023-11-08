@@ -1,7 +1,9 @@
 ---
 title: "Assignment 9: Spatial Analysis in R"
-author: "Student Name"
+author: "Emily Kuhlmann"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## OVERVIEW
@@ -24,12 +26,15 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 1. Import libraries: tidyverse, sf, leaflet, here, and mapview
 2. Execute the `here()` command to display the current project directory
 
-```{r Prepare workspace, error=F, warning=F}
+```{r Prepare workspace, echo=TRUE, error=F, message=FALSE, warning=FALSE}
 #1. 
-
-
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(here)
+library(mapview)
 #2. 
-
+here()
 
 ```
 

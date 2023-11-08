@@ -229,17 +229,12 @@ Dawson_utm <- NE_counties_utm %>%
   filter(NAME == "Dawson")
 
 #23 Spatially select gages within the selected county
-Dawson_intersect <- NWIS_Gages_sf_utm %>% 
-  filter(st_intersects(x = ., y = Dawson_utm, sparse = FALSE))
-
 Dawson_intersect2 <- NWIS_Gages_sf_utm[Dawson_utm,]
+
 #24 Plot
-Dawson_gages <- ggplot() +
-  geom_sf(data = NE_counties_utm, fill = "thistle") +
-  geom_sf(data = Dawson_utm, fill = "palegreen4") +
-  geom_sf(data = Dawson_intersect2, color = "black", alpha = 0.5)
-  
-Dawson_gages
-
-
+Dawson_gages2 <- mapView(NE_counties_utm, col.regions = "purple4",
+                         layer.name = "Nebraska Counties") +
+  mapView(Dawson_utm, col.regions = "plum1", layer.name = "Dawson County") +
+  mapView(Dawson_intersect2, layer.name = "Dawson County Gage Sites")
+Dawson_gages2
 ```

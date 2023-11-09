@@ -46,7 +46,7 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 4. Reveal the dataset's coordinate reference system
 5. Plot the records as a map (using `mapview` or `ggplot`)
 
-```{r Read the county data into an sf dataframe, echo=TRUE, message=FALSE, warning=FALSE, fig.cap= "Nebraska Counties"}
+```{r Read the county data into an sf dataframe, echo=TRUE, message=FALSE, warning=FALSE}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
 Nebraska_counties_sf <- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>% 
   filter(STATEFP == 31)
@@ -55,7 +55,7 @@ Nebraska_counties_sf <- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) 
 st_crs(Nebraska_counties_sf)
 
 #5. Plot the data
-NE_counties <- mapView(Nebraska_counties_sf)
+NE_counties <- mapView(Nebraska_counties_sf, layer.name = "Nebraska Counties")
 NE_counties
 ```
 
@@ -123,10 +123,10 @@ colnames(NWIS_Gages_sf)
  * Title your plot "NWIS Gage Locations in Nebraska"
  * Subtitle your plot with your name
 
-```{r Plot the spatial features, echo=TRUE, message=FALSE, warning=FALSE, fig.cap="NWIS Gage Locations in Nebraska"}
+```{r Plot the spatial features, echo=TRUE, message=FALSE, warning=FALSE}
 #13. Plot the gage locations atop the county features
 Neb_NWIS_Gages <- ggplot() +
-  geom_sf(data = Nebraska_counties_sf, fill = 'lightgreen') +
+  geom_sf(data = Nebraska_counties_sf, fill = 'palegreen3') +
   geom_sf(data = NWIS_Gages_sf, size = 0.75) +
   ggtitle("NWIS Gage Locations in Nebraska", subtitle = "Emily Kuhlmann")
   
@@ -174,7 +174,7 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 19. Plot the gage sites on top of counties (using `mapview`, `ggplot`, or `leaflet`) 
  * Show the magnitude of gage height by color, shape, other visualization technique.
 
-```{r map gage sites, echo=TRUE, message=FALSE, warning=FALSE, fig.cap= "Nebraska gage sites and flood event heights"}
+```{r map gage sites, echo=TRUE, message=FALSE, warning=FALSE}
 #Map the points, sized by gage height
 gage_height <- ggplot() +
   geom_sf(data = Nebraska_counties_sf, fill = "thistle") +
@@ -183,7 +183,8 @@ gage_height <- ggplot() +
   scale_color_gradient(low="blue",high="red") +
   theme(legend.title = element_text(size=10), 
         legend.text = element_text(size = 8),
-        legend.key.size = unit(0.5, 'cm'))
+        legend.key.size = unit(0.5, 'cm')) +
+  ggtitle("NWIS Gage Locations and Gage Heights in Nebraska")
 gage_height
 ```
 
@@ -199,7 +200,7 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 20. Transform the counties and gage sf datasets to UTM Zone 14N (EPGS = 32614).
 21. Using `mapview` or `ggplot`, plot the data so that each can be seen as different colors
 
-```{r spatial analysis, echo=TRUE, message=FALSE, warning=FALSE, fig.cap= "Nebraska gage sites in UTM projected coordinate system"}
+```{r spatial analysis, echo=TRUE, message=FALSE, warning=FALSE}
 #20 Transform the counties and gage location datasets to UTM Zone 14
 NE_counties_utm <-st_transform(Nebraska_counties_sf, 32614)
 NWIS_Gages_sf_utm <- st_transform(NWIS_Gages_sf, 32614)
@@ -207,7 +208,8 @@ NWIS_Gages_sf_utm <- st_transform(NWIS_Gages_sf, 32614)
 #21 Plot the data
 UTM_plot <- ggplot() +
   geom_sf(data = NE_counties_utm, fill = "thistle") +
-  geom_sf(data = NWIS_Gages_sf_utm, color = "darkgreen")
+  geom_sf(data = NWIS_Gages_sf_utm, color = "darkgreen") +
+  ggtitle("Nebraska gage sites in UTM projected coordinate system")
 UTM_plot
 ```
 
@@ -223,7 +225,7 @@ Now let's zoom into a particular county and examine the gages located there.
  * the selected county, 
  * and the gage sites in that county
 
-```{r spatial selection, echo=TRUE, message=FALSE, warning=FALSE, fig.cap= "Dawson county gage sites"}
+```{r spatial selection, echo=TRUE, message=FALSE, warning=FALSE}
 #22 Select the county
 Dawson_utm <- NE_counties_utm %>% 
   filter(NAME == "Dawson")

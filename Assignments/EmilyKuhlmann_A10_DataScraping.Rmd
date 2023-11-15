@@ -137,7 +137,7 @@ data.scrape <- function(the_PWSID, the_year) {
   water_system_tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
   PWSID_tag <- "td tr:nth-child(1) td:nth-child(5)"  
   Ownership_tag <- "div+ table tr:nth-child(2) td:nth-child(4)" 
-  Max_Day_Use_tag <- "th~ td+ td , th~ td+ td"
+  Max_Day_Use_tag <- "th~ td+ td"
 
   the_water_system <- the_website %>% html_nodes(water_system_tag) %>% html_text()
   the_site_ID <- the_website %>% html_nodes(PWSID_tag) %>% html_text()

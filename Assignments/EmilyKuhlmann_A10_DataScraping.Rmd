@@ -129,44 +129,50 @@ MaxDailyWithdrawls
 
 ```{r construct.a.scraping.function}
 #6. 
-data.scrape <- function(the_PWSID, the_year) {
+scrape.it <- function(the_year, the_PWSID){
+  #Get the proper url
   the_url <- ifelse(
-    the_year == "2022" & the_PWSID == "03-32-010",
-    'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022' ,
-    paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?','pswid=', the_PWSID,
-           '&year=', the_year))
+    the_year=='2022' & the_PWSID =='03-32-010',
+    'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022',
+    paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',
+           the_PWSID,'&year=',the_year))
 
+  #Fetch the website
   the_website <- read_html(the_url)
-
-  water_system_tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
-  PWSID_tag <- "td tr:nth-child(1) td:nth-child(5)"  
-  Ownership_tag <- "div+ table tr:nth-child(2) td:nth-child(4)" 
-  Max_Day_Use_tag <- "th~ td+ td , th~ td+ td"
-
-  the_water_system <- the_website %>% html_nodes(water_system_tag) %>% html_text()
-  the_site_ID <- the_website %>% html_nodes(PWSID_tag) %>% html_text()
-  the_Ownership <- the_website %>% html_nodes(Ownership_tag) %>% html_text()
-  the_max_use <- the_website %>% html_nodes(Max_Day_Use_tag) %>%  html_text()
-
-  df_withdrawls <- data.frame("Month" = c("Jan", "May", "Sep", "Feb", "Jun", "Oct",
+  
+  #Scrape the data
+  the_water_sys <- the_website %>% 
+    html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% html_text()
+  the_site_id <- the_website %>% 
+    html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% html_text()
+  the_ownership <- the_website %>% 
+    html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% html_text()
+  the_max_use <- the_website %>% html_nodes("th~ td+ td , th~ td+ td") %>% 
+  html_text()
+  
+  #Convert to dataframe
+  df_dayuse <- data.frame("Month" = c("Jan", "May", "Sep", "Feb", "Jun", "Oct",
                                           "Mar", "Jul", "Nov", "Apr", "Aug", "Dec"),
-                              "Year" = rep(the_year,12),
-                            "Max_Day_Use_mgd" = as.numeric(the_max_use),
-                            "Water_System" = the_water_system,
-                            "PWSID" = the_site_ID,
-                            "Ownership" = the_Ownership) %>% 
-  mutate(Date = my(paste(Month, "-", Year)))
-  return(df_withdrawls)
+                        "Year" = rep(the_year,12), 
+                        "Water_System" = the_water_sys,
+                        "PWSID" = the_site_id,
+                        "Ownership" = the_ownership,
+                        "Max_Day_Use" = as.numeric(the_max_use)) %>% 
+    mutate(Date = my(paste(Month, "-", Year)))
+
+
+  #Return the dataframe
+  return(df_dayuse)
 }
 
-
 ```
+
 
 7. Use the function above to extract and plot max daily withdrawals for Durham (PWSID='03-32-010') for each month in 2015
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
-Durham_2015 <- data.scrape("03-32-010", "2015")
+Durham_2015 <- scrape.it("2015", "03-32-010")
 
 ```
 

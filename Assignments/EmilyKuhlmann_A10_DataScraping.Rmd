@@ -130,14 +130,18 @@ MaxDailyWithdrawls
 ```{r construct.a.scraping.function}
 #6. 
 data.scrape <- function(the_PWSID, the_year) {
+  the_url <- ifelse(
+    the_year == "2022" & the_PWSID == "03-32-010",
+    'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022' ,
+    paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?','pswid=', the_PWSID,
+           '&year=', the_year))
 
-  the_website <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?',
-                                  'pswid=', the_PWSID, '&year=', the_year))
+  the_website <- read_html(the_url)
 
   water_system_tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
   PWSID_tag <- "td tr:nth-child(1) td:nth-child(5)"  
   Ownership_tag <- "div+ table tr:nth-child(2) td:nth-child(4)" 
-  Max_Day_Use_tag <- "th~ td+ td"
+  Max_Day_Use_tag <- "th~ td+ td , th~ td+ td"
 
   the_water_system <- the_website %>% html_nodes(water_system_tag) %>% html_text()
   the_site_ID <- the_website %>% html_nodes(PWSID_tag) %>% html_text()
@@ -145,9 +149,12 @@ data.scrape <- function(the_PWSID, the_year) {
   the_max_use <- the_website %>% html_nodes(Max_Day_Use_tag) %>%  html_text()
 
   df_withdrawls <- data.frame("Month" = c("Jan", "May", "Sep", "Feb", "Jun", "Oct",
-                                        "Mar", "Jul", "Nov", "Apr", "Aug", "Dec"),
-                            "Year" = rep(the_year,12),
-                            "Max_Day_Use_mgd" = as.numeric(the_max_use)) %>% 
+                                          "Mar", "Jul", "Nov", "Apr", "Aug", "Dec"),
+                              "Year" = rep(the_year,12),
+                            "Max_Day_Use_mgd" = as.numeric(the_max_use),
+                            "Water_System" = the_water_system,
+                            "PWSID" = the_site_ID,
+                            "Ownership" = the_Ownership) %>% 
   mutate(Date = my(paste(Month, "-", Year)))
   return(df_withdrawls)
 }
@@ -159,7 +166,7 @@ data.scrape <- function(the_PWSID, the_year) {
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
-Durham_2015 <- data.scrape(03-32-010, 2015)
+Durham_2015 <- data.scrape("03-32-010", "2015")
 
 ```
 

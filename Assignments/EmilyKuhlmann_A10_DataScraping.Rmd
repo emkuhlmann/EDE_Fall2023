@@ -117,15 +117,40 @@ MaxDailyWithdrawls <- ggplot(df_dayuse, aes(x = Date, y = Max_Day_Use)) +
   geom_line() +
   scale_x_date(date_breaks = "1 month") +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=0.5)) +
-  labs(y = "Max Daily Withdrawls", x = "Month")
+  labs(y = "Max Daily Withdrawls (MGD)", x = "Month")
 MaxDailyWithdrawls
 
+
+# labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+#"Sept", "Oct", "Nov", "Dec"))
 ```
 
 6. Note that the PWSID and the year appear in the web address for the page we scraped. Construct a function using your code above that can scrape data for any PWSID and year for which the NC DEQ has data. **Be sure to modify the code to reflect the year and site (pwsid) scraped**.
 
 ```{r construct.a.scraping.function}
 #6. 
+data.scrape <- function(the_PWSID, the_year) {
+
+  the_website <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?',
+                                  'pswid=', the_PWSID, '&year=', the_year))
+
+  water_system_tag <- "div+ table tr:nth-child(1) td:nth-child(2)"
+  PWSID_tag <- "td tr:nth-child(1) td:nth-child(5)"  
+  Ownership_tag <- "div+ table tr:nth-child(2) td:nth-child(4)" 
+  Max_Day_Use_tag <- "th~ td+ td , th~ td+ td"
+
+  the_water_system <- the_website %>% html_nodes(water_system_tag) %>% html_text()
+  the_site_ID <- the_website %>% html_nodes(PWSID_tag) %>% html_text()
+  the_Ownership <- the_website %>% html_nodes(Ownership_tag) %>% html_text()
+  the_max_use <- the_website %>% html_nodes(Max_Day_Use_tag) %>%  html_text()
+
+  df_withdrawls <- data.frame("Month" = c("Jan", "May", "Sep", "Feb", "Jun", "Oct",
+                                        "Mar", "Jul", "Nov", "Apr", "Aug", "Dec"),
+                            "Year" = rep(the_year,12),
+                            "Max_Day_Use_mgd" = as.numeric(the_max_use)) %>% 
+  mutate(Date = my(paste(Month, "-", Year)))
+  return(df_withdrawls)
+}
 
 
 ```
@@ -134,7 +159,7 @@ MaxDailyWithdrawls
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
-
+Durham_2015 <- data.scrape(03-32-010, 2015)
 
 ```
 

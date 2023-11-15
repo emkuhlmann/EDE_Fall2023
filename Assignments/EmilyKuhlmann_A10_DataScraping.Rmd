@@ -25,7 +25,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 * Load the packages `tidyverse`, `rvest`, and any others you end up using.
 * Check your working directory
 
-```{r 1. Project Setup, message = FALSE}
+```{r 1. Project Setup, echo=TRUE, message=FALSE, warning=FALSE}
 #1 
 library(tidyverse)
 library(here)
@@ -43,7 +43,7 @@ getwd()
  
 Indicate this website as the as the URL to be scraped. (In other words, read the contents into an `rvest` webpage object.)
 
-```{r set.the.scraping.website}
+```{r set.the.scraping.website, echo=TRUE, message=FALSE, warning=FALSE}
 #2 
 webpage <- 
   read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022')
@@ -63,7 +63,7 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 >HINT: The first value should be "Durham", the second "03-32-010", the third "Municipality", and the last should be a vector of 12 numeric values (represented as strings)".
 
-```{r scrape.the.data}
+```{r scrape.the.data, echo=TRUE, message=FALSE, warning=FALSE}
 #3 
 water_sys <- webpage %>% 
   html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% 
@@ -95,7 +95,7 @@ Max_Day_Use
 
 5. Create a line plot of the maximum daily withdrawals across the months for 2022
 
-```{r create.a.dataframe.from.scraped.data}
+```{r create.a.dataframe.from.scraped.data, echo=TRUE, message=FALSE, warning=FALSE, fig.cap="Maximum daily water withdrawls for Durham in 2022"}
 #4 
 Months <- webpage %>% 
   html_nodes(".fancy-table:nth-child(31) tr+ tr th") %>% 
@@ -109,25 +109,20 @@ df_dayuse <- data.frame("Month" = Months,
                         "Max_Day_Use" = as.numeric(Max_Day_Use))
 
 df_dayuse <- df_dayuse %>% 
-  mutate(Date = my(paste(Month, "-", Year))) %>% 
-  arrange(Date)
+  mutate(Date = my(paste(Month, "-", Year)))
 
 #5 
 MaxDailyWithdrawls <- ggplot(df_dayuse, aes(x = Date, y = Max_Day_Use)) +
   geom_line() +
-  scale_x_date(date_breaks = "1 month") +
-  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=0.5)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
   labs(y = "Max Daily Withdrawls (MGD)", x = "Month")
 MaxDailyWithdrawls
-
-
-# labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-#"Sept", "Oct", "Nov", "Dec"))
 ```
 
+\newpage
 6. Note that the PWSID and the year appear in the web address for the page we scraped. Construct a function using your code above that can scrape data for any PWSID and year for which the NC DEQ has data. **Be sure to modify the code to reflect the year and site (pwsid) scraped**.
 
-```{r construct.a.scraping.function}
+```{r construct.a.scraping.function, echo=TRUE, message=FALSE, warning=FALSE}
 #6. 
 scrape.it <- function(the_year, the_PWSID){
   #Get the proper url
@@ -170,17 +165,33 @@ scrape.it <- function(the_year, the_PWSID){
 
 7. Use the function above to extract and plot max daily withdrawals for Durham (PWSID='03-32-010') for each month in 2015
 
-```{r fetch.and.plot.Durham.2015.data}
+```{r fetch.and.plot.Durham.2015.data, echo=TRUE, message=FALSE, warning=FALSE, fig.cap="Maximum montly water withdrawls in Durham for 2015"}
 #7 
 Durham_2015 <- scrape.it("2015", "03-32-010")
+
+Drm2015 <- ggplot(Durham_2015, aes(x = Date, y = Max_Day_Use)) +
+  geom_line() + 
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  labs(y = "Max Daily Withdrawls (MGD)", x = "Month")
+Drm2015
 
 ```
 
 8. Use the function above to extract data for Asheville (PWSID = 01-11-010) in 2015. Combine this data with the Durham data collected above and create a plot that compares Asheville's to Durham's water withdrawals.
 
-```{r fetch.and.plot.Asheville.2015.data}
+```{r fetch.and.plot.Asheville.2015.data, echo=TRUE, message=FALSE, warning=FALSE, fig.cap="Maximum montly water withdrawls in Durham and Asheville for 2015"}
 #8 
+Asheville_2015 <- scrape.it("2015", "01-11-010")
 
+Drm_Ashv_2015 <- ggplot() +
+  geom_line(Durham_2015, mapping = aes(x = Date, y = Max_Day_Use, 
+                                       color = Water_System)) +
+  geom_line(Asheville_2015, mapping = aes(x = Date, y = Max_Day_Use, 
+                                          color = Water_System)) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  labs(y = "Max Daily Withdrawls (MGD)", x = "Month", color = "Water System",
+       title = "Maximum monthly water withdrawls, 2015")
+Drm_Ashv_2015
 
 ```
 
@@ -189,12 +200,22 @@ Durham_2015 <- scrape.it("2015", "03-32-010")
 
 > TIP: See Section 3.2 in the "10_Data_Scraping.Rmd" where we apply "map2()" to iteratively run a function over two inputs. Pipe the output of the map2() function to `bindrows()` to combine the dataframes into a single one. 
 
-```{r fetch.and.plot.Asheville.multiyear.data }
+```{r fetch.and.plot.Asheville.multiyear.data, echo=TRUE, message=FALSE, warning=FALSE, fig.cap="Maximum water withdrawls in Asheville from 2015 to 2021"}
 #9 
+the_years <- c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+               2020, 2021)
 
+Ash_2010_21 <- map2(the_years, "01-11-010", scrape.it) %>% 
+  bind_rows()
 
+Asheville_10_21 <- ggplot(Ash_2010_21, aes(x = Date, y = Max_Day_Use)) +
+  geom_line() +
+  geom_smooth(method = 'loess') +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(y = "Maximum daily withdrawls, MGD", x = "Year")
+Asheville_10_21
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
-> Answer:
+> Answer:It appears that Asheville has an overall positive trend in water usage over this period of time, especially from 2015 to 2021. 
 >
